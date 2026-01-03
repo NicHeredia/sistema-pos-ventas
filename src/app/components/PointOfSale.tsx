@@ -22,7 +22,7 @@ export interface SaleItem {
 
 export interface Sale {
   id: string;
-  date: Date;
+  date: string;
   items: SaleItem[];
   total: number;
   paymentMethod: string;
@@ -39,6 +39,7 @@ export function PointOfSale({ products, onCompleteSale }: PointOfSaleProps) {
   const [cart, setCart] = useState<SaleItem[]>([]);
   const [paymentMethod, setPaymentMethod] = useState("efectivo");
   const [customerName, setCustomerName] = useState("");
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
   const filteredProducts = products.filter((product) =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -92,11 +93,11 @@ export function PointOfSale({ products, onCompleteSale }: PointOfSaleProps) {
     if (cart.length === 0) return;
 
     const sale: Omit<Sale, "id"> = {
-      date: new Date(),
+      date: selectedDate.toISOString().split('T')[0],
       items: cart,
       total: calculateTotal(),
       paymentMethod,
-      customerName: customerName || undefined,
+      customerName: customerName.trim() || undefined,
     };
 
     onCompleteSale(sale);
@@ -105,6 +106,7 @@ export function PointOfSale({ products, onCompleteSale }: PointOfSaleProps) {
     setCart([]);
     setPaymentMethod("efectivo");
     setCustomerName("");
+    setSelectedDate(new Date());
     setSearchTerm("");
   };
 
@@ -238,6 +240,16 @@ export function PointOfSale({ products, onCompleteSale }: PointOfSaleProps) {
                   placeholder="Nombre del cliente"
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="saleDate">Fecha de la venta</Label>
+                <Input
+                  id="saleDate"
+                  type="date"
+                  value={selectedDate.toISOString().split('T')[0]}
+                  onChange={(e) => setSelectedDate(new Date(e.target.value))}
                 />
               </div>
 

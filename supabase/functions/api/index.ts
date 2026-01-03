@@ -145,7 +145,7 @@ Deno.serve(async (req) => {
     if (req.method === 'POST' && path.endsWith('/sales')) {
       // Create sale
       const body = await req.json()
-      const { items, total, paymentMethod } = body
+      const { items, total, paymentMethod, customerName, date } = body
 
       if (!items || !Array.isArray(items) || items.length === 0 || total === undefined) {
         return new Response(JSON.stringify({
@@ -162,7 +162,8 @@ Deno.serve(async (req) => {
         items,
         total: parseFloat(total),
         paymentMethod: paymentMethod || "cash",
-        date: new Date().toISOString(),
+        customerName: customerName || undefined,
+        date: date,
       }
 
       const { error } = await supabase

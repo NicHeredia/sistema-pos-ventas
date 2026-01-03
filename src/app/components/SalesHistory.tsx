@@ -31,8 +31,9 @@ export function SalesHistory({ sales, onDeleteSale }: SalesHistoryProps) {
   const [filterDate, setFilterDate] = useState("");
   const [filterMonth, setFilterMonth] = useState("");
 
-  const formatDate = (date: Date) => {
-    const d = new Date(date);
+  const formatDate = (date: string) => {
+    const [year, month, day] = date.split('-').map(Number);
+    const d = new Date(year, month - 1, day);
     return d.toLocaleDateString("es-ES", {
       day: "2-digit",
       month: "2-digit",
@@ -40,37 +41,34 @@ export function SalesHistory({ sales, onDeleteSale }: SalesHistoryProps) {
     });
   };
 
-  const formatTime = (date: Date) => {
-    const d = new Date(date);
-    return d.toLocaleTimeString("es-ES", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+  const formatTime = (date: string) => {
+    return "00:00";
   };
 
-  const formatMonthYear = (date: Date) => {
-    const d = new Date(date);
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+  const formatMonthYear = (date: string) => {
+    return date.slice(0, 7);
   };
 
   const filteredSales = sales.filter((sale) => {
-    const saleDate = new Date(sale.date);
-    const saleDateStr = formatDate(saleDate);
-    const saleMonthStr = formatMonthYear(saleDate);
+    const saleDateStr = sale.date; // "2026-01-02"
 
-    if (filterDate && !saleDateStr.includes(filterDate)) {
+    if (filterDate && saleDateStr !== filterDate) {
       return false;
     }
 
-    if (filterMonth && saleMonthStr !== filterMonth) {
-      return false;
+    if (filterMonth) {
+      const [year, month] = filterMonth.split('-').map(Number);
+      const [saleYear, saleMonth] = saleDateStr.split('-').map(Number);
+      if (saleYear !== year || saleMonth !== month) {
+        return false;
+      }
     }
 
     return true;
   });
 
   const sortedSales = [...filteredSales].sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    (a, b) => new Date(b.date + 'T12:00:00').getTime() - new Date(a.date + 'T12:00:00').getTime()
   );
 
   return (
@@ -162,7 +160,7 @@ export function SalesHistory({ sales, onDeleteSale }: SalesHistoryProps) {
                       <TableCell>{formatDate(sale.date)}</TableCell>
                       <TableCell>{formatTime(sale.date)}</TableCell>
                       <TableCell>
-                        {sale.customerName || (
+                        {sale.customerName ? sale.customerName : (
                           <span className="text-muted-foreground">-</span>
                         )}
                       </TableCell>

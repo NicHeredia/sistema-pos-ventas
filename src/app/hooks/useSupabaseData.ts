@@ -69,13 +69,8 @@ export function useSupabaseData(): UseSupabaseDataReturn {
       const salesData = await salesResponse.json();
       console.log("Sales data received");
       
-      // Convert date strings back to Date objects
-      const salesWithDates = (salesData.sales || []).map((sale: Sale) => ({
-        ...sale,
-        date: new Date(sale.date),
-      }));
-      
-      setSales(salesWithDates);
+      // Convert date strings back to Date objects - REMOVED, now date is string
+      setSales(salesData.sales || []);
 
       // Fetch expenses (optional - don't fail if this fails)
       console.log("Fetching expenses...");
@@ -212,7 +207,6 @@ export function useSupabaseData(): UseSupabaseDataReturn {
       const data = await response.json();
       const saleWithDate = {
         ...data.sale,
-        date: new Date(data.sale.date),
       };
       setSales((prev) => [...prev, saleWithDate]);
     } catch (err) {
