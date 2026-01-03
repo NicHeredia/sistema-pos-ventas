@@ -43,7 +43,7 @@ export interface Expense {
   description: string;
   amount: number;
   category: string;
-  date: Date;
+  date: string;
 }
 
 interface ExpenseManagerProps {
@@ -76,7 +76,7 @@ export function ExpenseManager({
     description: "",
     amount: "",
     category: "",
-    date: "",
+    date: new Date().toISOString().split('T')[0],
   });
 
   const resetForm = () => {
@@ -84,7 +84,7 @@ export function ExpenseManager({
       description: "",
       amount: "",
       category: "",
-      date: "",
+      date: new Date().toISOString().split('T')[0],
     });
   };
 
@@ -119,7 +119,7 @@ export function ExpenseManager({
       description: expense.description,
       amount: expense.amount.toString(),
       category: expense.category,
-      date: expense.date.toISOString().split("T")[0],
+      date: expense.date,
     });
   };
 
@@ -129,8 +129,10 @@ export function ExpenseManager({
     resetForm();
   };
 
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString("es-ES", {
+  const formatDate = (date: string) => {
+    const [year, month, day] = date.split('-').map(Number);
+    const d = new Date(year, month - 1, day);
+    return d.toLocaleDateString("es-ES", {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",

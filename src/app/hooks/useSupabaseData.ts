@@ -86,13 +86,8 @@ export function useSupabaseData(): UseSupabaseDataReturn {
           const expensesData = await expensesResponse.json();
           console.log("Expenses data received");
           
-          // Convert date strings back to Date objects
-          const expensesWithDates = (expensesData.expenses || []).map((expense: Expense) => ({
-            ...expense,
-            date: new Date(expense.date),
-          }));
-          
-          setExpenses(expensesWithDates);
+          // Convert date strings back to Date objects - REMOVED, now date is string
+          setExpenses(expensesData.expenses || []);
         } else {
           console.warn("Failed to fetch expenses, setting empty array:", expensesResponse.status, expensesResponse.statusText);
           setExpenses([]);
@@ -255,7 +250,6 @@ export function useSupabaseData(): UseSupabaseDataReturn {
       const data = await response.json();
       const expenseWithDate = {
         ...data.expense,
-        date: new Date(data.expense.date),
       };
       setExpenses((prev) => [...prev, expenseWithDate]);
     } catch (err) {
@@ -282,7 +276,7 @@ export function useSupabaseData(): UseSupabaseDataReturn {
 
       const data = await response.json();
       setExpenses((prev) =>
-        prev.map((e) => (e.id === id ? { ...data.expense, date: new Date(data.expense.date) } : e))
+        prev.map((e) => (e.id === id ? { ...data.expense } : e))
       );
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Unknown error";

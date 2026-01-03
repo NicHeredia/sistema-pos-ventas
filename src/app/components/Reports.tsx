@@ -35,17 +35,13 @@ export function Reports({ sales, expenses }: ReportsProps) {
     const [year, month] = selectedMonth.split("-").map(Number);
 
     const monthSales = sales.filter((sale) => {
-      const saleDate = new Date(sale.date);
-      return (
-        saleDate.getFullYear() === year && saleDate.getMonth() === month - 1
-      );
+      const [saleYear, saleMonth] = sale.date.split('-').map(Number);
+      return saleYear === year && saleMonth === month;
     });
 
     const monthExpenses = expenses.filter((expense) => {
-      const expenseDate = new Date(expense.date);
-      return (
-        expenseDate.getFullYear() === year && expenseDate.getMonth() === month - 1
-      );
+      const [expYear, expMonth] = expense.date.split('-').map(Number);
+      return expYear === year && expMonth === month;
     });
 
     return { monthSales, monthExpenses };
@@ -130,13 +126,12 @@ export function Reports({ sales, expenses }: ReportsProps) {
     const categoryData: { [key: string]: number } = {};
 
     monthExpenses.forEach((expense) => {
-      categoryData[expense.category] =
-        (categoryData[expense.category] || 0) + expense.amount;
+      categoryData[expense.category] = (categoryData[expense.category] || 0) + 1;
     });
 
-    return Object.entries(categoryData).map(([category, amount]) => ({
+    return Object.entries(categoryData).map(([category, count]) => ({
       category,
-      amount: parseFloat(amount.toFixed(2)),
+      count,
     }));
   };
 
@@ -332,14 +327,14 @@ export function Reports({ sales, expenses }: ReportsProps) {
                         cy="50%"
                         outerRadius={80}
                         fill="#8884d8"
-                        dataKey="amount"
-                        label={({ category, percent }) => `${category} ${(percent * 100).toFixed(0)}%`}
+                        dataKey="count"
+                        label={({ category, count, percent }) => `${category}: ${count} (${(percent * 100).toFixed(0)}%)`}
                       >
                         {expenseCategoriesData.map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={`hsl(${index * 45}, 70%, 50%)`} />
                         ))}
                       </Pie>
-                      <Tooltip formatter={(value: number) => `$${value.toFixed(2)}`} />
+                      <Tooltip formatter={(value: number) => `${value} gastos`} />
                     </PieChart>
                   </ResponsiveContainer>
                 ) : (
