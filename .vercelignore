@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+
+# Build outputs (these are generated)
+dist/
+
+# Environment files
+.env
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Supabase local files
+.supabase/
+
+# Git
+.git/
+.gitignore
